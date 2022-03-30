@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sqlMap namespace="workflow">
+    <!-- 查询流程模板基本信息 -->
+    <sql id="queryWfTemplates">
+        <![CDATA[
+           SELECT 
+               d.ID,d.WF_ID,d.WF_CODE,d.WF_NAME,d.WF_VERSION,d.WF_STATE,d.WF_TYPE_CODE
+           FROM 
+               WF_DEFINITION d 
+           WHERE 1=1
+                <#if wfState != "" && wfState != null>
+                   AND	d.WF_STATE = :wfState
+                </#if>
+         ]]>
+    </sql>
+
+    <!-- 查询流程步骤信息 -->
+    <sql id="queryWfSteps">
+        <![CDATA[
+           SELECT 
+			    s.ID,s.WF_ID,s.WF_CODE,s.NODE_CODE,s.STEP_NUM,s.ROLLBACK_FLAG,s.NEXT_STEP_Y,s.NEXT_STEP_N
+			FROM 
+			    WF_STEP s 
+			WHERE 
+			    S.WF_CODE IN (${inSql})
+         ]]>
+    </sql>
+    <!-- 查询流程节点信息 -->
+    <sql id="queryWfNodes">
+        <![CDATA[
+           SELECT 
+               n.ID,n.NODE_CODE,n.NODE_NAME,n.NODE_TYPE,n.NODE_STATE,n.ROLLBACK_FLAG,n.CND_CALL_TYPE
+           FROM 
+               WF_NODE n 
+           WHERE 1=1
+                <#if wfNodeState != "" && wfNodeState != null>
+                   AND	n.NODE_STATE = :wfNodeState
+                </#if>
+         ]]>
+    </sql>
+    <!-- 查询流程组合节点子项信息 -->
+    <sql id="queryWfCndNodeItems">
+        <![CDATA[
+           SELECT 
+               c.ID,c.CND_CODE,c.BND_CODE,c.STEP_NUM
+           FROM 
+               WF_CND_ITEM c
+               LEFT JOIN WF_NODE n ON c.CND_CODE = n.NODE_CODE
+            WHERE 1=1
+                <#if wfNodeState != "" && wfNodeState != null>
+                   AND	n.NODE_STATE = :wfNodeState
+                </#if>
+         ]]>
+    </sql>
+</sqlMap>

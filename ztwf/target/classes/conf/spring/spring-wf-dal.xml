@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+   	http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
+   	http://www.springframework.org/schema/context  http://www.springframework.org/schema/context/spring-context.xsd
+   	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+   	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <context:property-placeholder location="classpath:workflowsettings.properties" />
+
+	<!--<context:component-scan base-package="com.suning.zhongtai.wf.*,com.suning.zt.uid"/>-->
+	<context:component-scan base-package="com.suning.zhongtai.wf.*"/>
+
+	<bean id="workflowEngineInitListener" class="com.suning.zhongtai.wf.bootstrap.WorkflowEngineInitListener" />
+
+	<aop:aspectj-autoproxy proxy-target-class="true"
+		expose-proxy="true" />
+
+	<jee:jndi-lookup id="wfDataSource" jndi-name="${workflowDataSource}"
+		proxy-interface="javax.sql.DataSource" lookup-on-startup="false" />
+
+	<bean id="wfDalClient" name="wfDalClient"
+		class="com.suning.framework.dal.client.support.DefaultDalClient">
+		<property name="sqlMapConfigLocation" value="classpath*:conf/sqlMap/sqlMap_workflow_*.xml" />
+		<property name="dataSource" ref="wfDataSource" />
+		<property name="entityPackage" value="com.suning.zhongtai.wf.dao.entity" />
+	</bean>
+
+</beans>
+
